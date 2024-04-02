@@ -61,13 +61,17 @@ int main(void)
     n++;
   }
   fclose(fp);
-
+  int elementos_por_thread = M / num_threads;
+  int sobra = M % num_threads;
+  int atual = 0;
   for (int i = 0; i < num_threads; i++)
   {
-    thread_args[i].inicio = i * (M / num_threads);
-    thread_args[i].fim = (i + 1) * (M / num_threads);
+    thread_args[i].inicio = atual;
+    int extra = (i < sobra) ? 1 : 0;
+    thread_args[i].fim = atual + elementos_por_thread + extra;
     thread_args[i].vetor = vetor;
     pthread_create(&threads[i], NULL, soma_vetor, (void *)&thread_args[i]);
+    atual = thread_args[i].fim;
   }
 
   float soma_final = 0.0;
